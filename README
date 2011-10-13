@@ -1,0 +1,33 @@
+imulates navigator.geolocation position changes for testing  mobile web apps
+on non-mobile devices. Sadly, while this code works as advertised, Firefox
+doesn't poll for position updates unless the list of wifi networks your
+computer can see changes.
+
+The idea behind this app was to use it as a mock geolocation provider (instead
+of Firefox's default one, which looks up your location by sending the list of
+wifi networks your computer can see to Google). The code accepts queries like
+
+?path=<polyline>&start=<timestamp>&speed=<speed>
+
+and, on each load, calculates the position of an imaginary traveler which began
+its journey at time <timestamp> and is traveling at constant speed <speed>
+along the path defined by <polyline>.
+
+(What's a polyline? It's a series of latitude/longitude points encoded using an
+algorithm Google devised. You can create your own polyline at:
+
+http://code.google.com/apis/maps/documentation/utilities/polylineutility.html )
+
+So, a browser's geolocation service repeatedly checking the result from that
+query would get new locations progressively farther along the path, simulating
+movement within the defined parameters. Awesome and useful, right?
+
+Unfortunately, Firefox only triggers the geolocation watchPosition() callback
+when it notices that the list of wifi networks your computer can see has
+changed, so while geowifisim correctly delivers a location near the start of
+the defined path the first time you do a geolocation lookup, watchPosition()
+never fires again, and movement is not simulated.
+
+A workaround would be writing your code to do periodic getCurrentPosition()
+calls when you're debugging on a desktop, and only test the actual
+watchPosition() when you're testing on a real mobile device.
