@@ -1,11 +1,14 @@
-from time import time as timestamp
+from time import time
 from math import radians, sin, cos, asin, sqrt
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response, abort
 
 from gpolyline_decoder import decode_line
 
+DEBUG = True
+
 app = Flask(__name__)
+app.config.from_object(__name__)
 
 # Haversine great circle distance formula
 def distance(lon1, lat1, lon2, lat2):
@@ -65,7 +68,7 @@ def calculate_position(start, path, speed):
             total_distance += distance_between
     return position
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     start = request.args.get('start', None)
     path = request.args.get('path', None)
@@ -73,8 +76,8 @@ def home():
 
     if start and path:
         try:
-            start = date.fromtimestamp(start)
-        except TypeError:
+            start = int(start)
+        except ValueError:
             abort(400)
 
         try:
@@ -87,9 +90,9 @@ def home():
         position = calculate_position(start, path, speed)
         response = make_response(render_template('location.json',
             position=position))
-        response.headers['Content-type'] = 'text/json'
-    elif not request.args.length():
-        response = make_response(render_template('index.html'))
+        response.headers['Content-type'] = 'application/json'
+    elif len(request.args.items()) == 0:
+        response = make_response(render_template('index.html', now=int(time())))
     else:
         abort(400)
     return response
