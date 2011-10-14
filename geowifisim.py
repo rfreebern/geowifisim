@@ -10,16 +10,18 @@ DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+
 # Haversine great circle distance formula
 def distance(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
-    
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * asin(sqrt(a)) 
-    return c * 6367 # kilometers
+    c = 2 * asin(sqrt(a))
+    return c * 6367  # kilometers
+
 
 def get_speed(term):
     # Speeds in KPH
@@ -40,6 +42,7 @@ def get_speed(term):
     else:
         speed = SPEED['WALKING']
     return speed
+
 
 def calculate_position(start, path, speed):
     # Convert speed to m/s
@@ -68,6 +71,7 @@ def calculate_position(start, path, speed):
             total_distance += distance_between
     return position
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     start = request.args.get('start', None)
@@ -92,10 +96,12 @@ def home():
             position=position))
         response.headers['Content-type'] = 'application/json'
     elif len(request.args.items()) == 0:
-        response = make_response(render_template('index.html', now=int(time())))
+        response = make_response(render_template('index.html',
+                                                 now=int(time())))
     else:
         abort(400)
     return response
+
 
 if __name__ == "__main__":
     app.run()
