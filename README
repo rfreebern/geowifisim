@@ -1,4 +1,4 @@
-imulates navigator.geolocation position changes for testing  mobile web apps
+Simulates navigator.geolocation position changes for testing mobile web apps
 on non-mobile devices. Sadly, while this code works as advertised, Firefox
 doesn't poll for position updates unless the list of wifi networks your
 computer can see changes.
@@ -31,3 +31,11 @@ never fires again, and movement is not simulated.
 A workaround would be writing your code to do periodic getCurrentPosition()
 calls when you're debugging on a desktop, and only test the actual
 watchPosition() when you're testing on a real mobile device.
+
+REQUIREMENTS:
+Flask: http://flask.pocoo.org/
+$ pip install Flask
+
+USAGE:
+$ python geowifisim.py
+Runs a simple webserver hosting the app on http://127.0.0.1:5000
